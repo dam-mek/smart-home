@@ -1,0 +1,562 @@
+swagger: "2.0"
+info:
+  title: Smart Home API
+  description: Interface for controlling and monitoring smart home devices
+  version: "0.1"
+host: "localhost:8080"
+basePath: "/api"
+schemes: ["http"]
+tags:
+  - name: events
+  - name: sensors
+  - name: users
+paths:
+  /events:
+    post:
+      summary: Registering an event from a sensor
+      description: Registers an event from a sensor
+      operationId: registerEvent
+      tags:
+        - events
+      consumes:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Event to be registered"
+          required: true
+          schema:
+            $ref: "#/definitions/SensorEvent"
+      responses:
+        "201":
+          description: Success
+        "400":
+          description: The request body is syntactically invalid
+        "415":
+          description: Request body is in unsupported format
+        "422":
+          description: The request body is syntactically valid but contains invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      summary: Getting available methods
+      description: Returns a list of available methods in the Allow header
+      operationId: eventsOptions
+      tags:
+        - events
+      responses:
+        "204":
+          description: Success
+          headers:
+            Allow:
+              description: List of available methods
+              type: array
+              items:
+                type: string
+  /sensors:
+    get:
+      summary: Getting all sensors
+      description: Returns a list of all sensors
+      operationId: getSensors
+      tags:
+        - sensors
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Sensor"
+        "406":
+          description: Unsupported response body format requested
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    head:
+      summary: Request Headers
+      description: Returns the GET response headers
+      operationId: headSensors
+      tags:
+        - sensors
+      responses:
+        "200":
+          description: Success
+        "406":
+          description: Unsupported response body format requested
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      summary: Registering a sensor
+      description: Registers the sensor in the system
+      operationId: registerSensor
+      tags:
+        - sensors
+      consumes:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "The sensor that needs to be registered"
+          required: true
+          schema:
+            $ref: "#/definitions/SensorToCreate"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sensor"
+        "400":
+          description: The request body is syntactically invalid
+        "415":
+          description: Request body is in unsupported format
+        "422":
+          description: The request body is syntactically valid but contains invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      summary: Getting available methods
+      description: Returns a list of available methods in the Allow header
+      operationId: sensorsOptions
+      tags:
+        - sensors
+      responses:
+        "204":
+          description: Success
+          headers:
+            Allow:
+              description: List of available methods
+              type: array
+              items:
+                type: string
+  /sensors/{sensor_id}:
+    get:
+      summary: Receiving the sensor
+      description: Returns a sensor by ID
+      operationId: getSensor
+      tags:
+        - sensors
+      produces:
+        - application/json
+      parameters:
+        - name: "sensor_id"
+          in: "path"
+          description: "Sensor ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sensor"
+        "404":
+          description: Sensor with the specified ID not found
+        "422":
+          description: Sensor ID is not valid
+        "406":
+          description: Unsupported response body format requested
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    head:
+      summary: Request Headers
+      description: Returns the GET response headers
+      operationId: headSensor
+      tags:
+        - sensors
+      parameters:
+        - name: "sensor_id"
+          in: "path"
+          description: "Sensor ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: Success
+        "404":
+          description: Sensor with the specified ID not found
+        "422":
+          description: Sensor ID is not valid
+        "406":
+          description: Unsupported response body format requested
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      summary: Getting available methods
+      description: Returns a list of available methods in the Allow header
+      operationId: sensorOptions
+      tags:
+        - sensors
+      parameters:
+        - name: "sensor_id"
+          in: "path"
+          description: "Sensor ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "204":
+          description: Success
+          headers:
+            Allow:
+              description: List of available methods
+              type: array
+              items:
+                type: string
+  /users:
+    post:
+      summary: Create a user
+      description: Creates a user with the specified parameters
+      operationId: createUser
+      tags:
+        - users
+      consumes:
+        - application/json
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User to register"
+          required: true
+          schema:
+            $ref: "#/definitions/UserToCreate"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: The request body is syntactically invalid
+        "415":
+          description: Request body is in unsupported format
+        "422":
+          description: The request body is syntactically valid but contains invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      summary: Getting available methods
+      description: Returns a list of available methods in the Allow header
+      operationId: usersOptions
+      tags:
+        - users
+      responses:
+        "204":
+          description: Success
+          headers:
+            Allow:
+              description: List of available methods
+              type: array
+              items:
+                type: string
+  /users/{user_id}/sensors:
+    get:
+      summary: Receiving user sensors
+      description: Returns a list of sensors associated with a given user
+      operationId: getUserSensors
+      tags:
+        - users
+      produces:
+        - application/json
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "User ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Sensor"
+        "404":
+          description: There is no user with this ID
+        "406":
+          description: Unsupported response body format requested
+        "422":
+          description: User ID is not valid
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    head:
+      summary: Request Headers
+      description: Returns the GET response headers
+      operationId: headUserSensors
+      tags:
+        - users
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "User ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: Success
+        "404":
+          description: There is no user with this ID
+        "406":
+          description: Unsupported response body format requested
+        "422":
+          description: User ID is not valid
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      summary: Linking a sensor to a user
+      description: Associates the given user with the given sensor
+      operationId: bindSensorToUser
+      tags:
+        - users
+      consumes:
+        - application/json
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "User ID"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "Binding parameters"
+          required: true
+          schema:
+            $ref: "#/definitions/SensorToUserBinding"
+      responses:
+        "201":
+          description: Success
+        "400":
+          description: The request body is syntactically invalid
+        "404":
+          description: There is no user with this ID
+        "415":
+          description: Request body is in unsupported format
+        "422":
+          description: The request body is syntactically valid but contains invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        default:
+          description: Execution error
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      summary: Getting available methods
+      description: Returns a list of available methods in the Allow header
+      operationId: usersSensorsOptions
+      tags:
+        - users
+      parameters:
+        - name: "user_id"
+          in: "path"
+          description: "User ID"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "204":
+          description: Success
+          headers:
+            Allow:
+              description: List of available methods
+              type: array
+              items:
+                type: string
+definitions:
+  User:
+    title: User
+    description: Smart home user
+    type: object
+    properties:
+      id:
+        description: Identifier
+        type: integer
+        format: int64
+        minimum: 1
+      name:
+        description: Name
+        type: string
+        minLength: 1
+    required:
+      - id
+      - name
+    example:
+      id: 1
+      name: Ivan Ivanovich Ivanov
+  UserToCreate:
+    title: UserToCreate
+    description: Smart home user to be created
+    type: object
+    properties:
+      name:
+        description: Name
+        type: string
+        minLength: 1
+    required:
+      - name
+    example:
+      name: Ivan Ivanovich Ivanov
+  Error:
+    title: Error
+    description: Error executing request
+    type: object
+    properties:
+      reason:
+        description: Cause
+        type: string
+        minLength: 1
+    required:
+      - reason
+    example:
+      reason: An error occurred
+  Sensor:
+    title: Sensor
+    description: SmartHome sensor
+    type: object
+    properties:
+      id:
+        description: Identifier
+        type: integer
+        format: int64
+        minimum: 1
+      serial_number:
+        description: Serial number
+        type: string
+        pattern: ^\d{10}$
+      type:
+        description: Type
+        type: string
+        format: enum
+        enum:
+          - cc
+          - adc
+      current_state:
+        description: The sensor state corresponds to the value in the payload of the last processed event.
+        type: integer
+        format: int64
+      description:
+        description: Description
+        type: string
+      is_active:
+        description: Sensor activity flag
+        type: boolean
+      registered_at:
+        description: Date/time of registration
+        type: string
+        format: date-time
+      last_activity:
+        description: Last event time
+        type: string
+        format: date-time
+    required:
+      - id
+      - serial_number
+      - type
+      - current_state
+      - description
+      - is_active
+      - registered_at
+      - last_activity
+    example:
+      id: 1
+      serial_number: "1234567890"
+      type: "cc"
+      current_state: 1
+      description: "Temperature sensor"
+      is_active: true
+      registered_at: "2018-01-01T00:00:00Z"
+      last_activity: "2018-01-01T00:00:00Z"
+  SensorToCreate:
+    title: SensorToCreate
+    description: SmartHome sensor that needs to be created
+    type: object
+    properties:
+      serial_number:
+        description: Serial number
+        type: string
+        pattern: ^\d{10}$
+      type:
+        description: Type
+        type: string
+        format: enum
+        enum:
+          - cc
+          - adc
+      description:
+        description: Description
+        type: string
+      is_active:
+        description: Sensor activity flag
+        type: boolean
+    required:
+      - serial_number
+      - type
+      - description
+      - is_active
+    example:
+      serial_number: "1234567890"
+      type: "cc"
+      description: "Temperature sensor"
+      is_active: true
+  SensorToUserBinding:
+    title: SensorToUserBinding
+    description: Linking a sensor to a user
+    type: object
+    properties:
+      sensor_id:
+        description: Sensor ID
+        type: integer
+        format: int64
+        minimum: 1
+    required:
+      - sensor_id
+    example:
+      sensor_id: 1
+  SensorEvent:
+    title: SensorEvent
+    description: Sensor event
+    type: object
+    properties:
+      sensor_serial_number:
+        description: Sensor serial number
+        type: string
+        pattern: ^\d{10}$
+      payload:
+        description: Information from the sensor
+        type: integer
+        format: int64
+    required:
+      - sensor_serial_number
+      - payload
+    example:
+      sensor_serial_number: "1234567890"
+      payload: 10
